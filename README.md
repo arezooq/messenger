@@ -79,17 +79,17 @@ To clone the repository using an SSH key, including a certificate issued by your
 
 * [Postgres](https://www.postgresql.org/) PostgreSQL, also known as Postgres, is a free and open-source relational database management system emphasizing extensibility and SQL compliance.
 
-* [gorm] (https://gorm.io/index.html) The fantastic ORM library for Golang.
+* [gorm](https://gorm.io/index.html) The fantastic ORM library for Golang.
 
-* [mongo] (https://www.mongodb.com/docs/drivers/go/current/) Welcome to the documentation site for the official MongoDB Go Driver. 
+* [mongo](https://www.mongodb.com/docs/drivers/go/current/) Welcome to the documentation site for the official MongoDB Go Driver. 
 
 ### Dependencies
 
-* [JWT] (https://pkg.go.dev/github.com/golang-jwt/jwt/v5#section-readme) JSON Web Tokens.
+* [JWT](https://pkg.go.dev/github.com/golang-jwt/jwt/v5#section-readme) JSON Web Tokens.
 
-* [bcrypt] (https://pkg.go.dev/golang.org/x/crypto/bcrypt) Package bcrypt implements Provos and Mazières's bcrypt adaptive hashing algorithm.
+* [bcrypt](https://pkg.go.dev/golang.org/x/crypto/bcrypt) Package bcrypt implements Provos and Mazières's bcrypt adaptive hashing algorithm.
 
-* [pq] (https://pkg.go.dev/github.com/lib/pq) Package pq is a pure Go Postgres driver for the database/sql package.
+* [pq](https://pkg.go.dev/github.com/lib/pq) Package pq is a pure Go Postgres driver for the database/sql package.
 
 ### Authors
 
