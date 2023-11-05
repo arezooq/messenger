@@ -38,7 +38,6 @@ To clone the repository using an SSH key, including a certificate issued by your
 
 
 ### Install
-
 * Create file go.mod:
  
    go mod init github.com/username/hex-messanger
