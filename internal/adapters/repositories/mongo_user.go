@@ -61,10 +61,11 @@ func NewUserMongoRepository() *UserMongoRepository {
 
 func (u *UserMongoRepository) RegisterUser(user domain.User) error {
 
+	fmt.Println(user.Email)
 	errUserExist := u.UserMongoExist(user.Email)
 
 	if errUserExist != nil {
-		return errors.New("user already exists")
+		return errors.New(errUserExist.Error())
 	}
 
 	hashedPassword, _ := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
@@ -211,10 +212,13 @@ func (u *UserMongoRepository) GenerateMongoAccessToken(userID, jwtSecret string)
 }
 
 func (u *UserMongoRepository) UserMongoExist(email string) error{
-	user := &domain.User{}
-	err := u.collection.FindOne(context.Background(), bson.M{"email": email}).Decode(&user)
-	if err != nil {
-		return errors.New("user already exists")
+	
+	countEmail, errEmail := u.collection.CountDocuments(context.Background(), bson.M{"email": email})
+	if errEmail != nil {
+		return errors.New("error occured while checking for the email")
+	}
+	if countEmail > 0 {
+		return errors.New("this email or password number already exists")
 	}
 	return nil
 }
