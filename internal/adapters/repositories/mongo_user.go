@@ -218,7 +218,7 @@ func (u *UserMongoRepository) UserMongoExist(email string) error{
 		return errors.New("error occured while checking for the email")
 	}
 	if countEmail > 0 {
-		return errors.New("this email or password number already exists")
+		return errors.New("this email or password already exists")
 	}
 	return nil
 }
