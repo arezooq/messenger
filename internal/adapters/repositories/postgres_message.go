@@ -71,7 +71,7 @@ func (m *MessangerPostgresRepository) UpdateMessage(id, body, user_id string) (*
 	}
 	message.Body = body
 
-	req = m.db.Model(&message).Where("id = ?", id, "user_id = ?", user_id).Update(message)
+	req = m.db.Model(&message).Where("id = ? AND user_id = ?", id, user_id).Update(message)
 	if req.RowsAffected == 0 {
 		return nil, errors.New("unable to update message :(")
 	}
@@ -82,7 +82,7 @@ func (m *MessangerPostgresRepository) UpdateMessage(id, body, user_id string) (*
 
 func (m *MessangerPostgresRepository) DeleteMessage(id, user_id string) error {
 	message := &domain.Message{}
-	req := m.db.Where("id = ?", id, "user_id = ?", user_id).Delete(&message)
+	req := m.db.Where("id = ? AND user_id = ?", id, user_id).Delete(&message)
 	if req.RowsAffected == 0 {
 		return errors.New("message not found")
 	}
