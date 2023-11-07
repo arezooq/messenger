@@ -99,7 +99,7 @@ func (m *MessangerMongoRepository) UpdateMessage(id, body, user_id string) (*dom
 	err := m.collection.FindOne(context.Background(), filter).Decode(&message)
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
-			return nil,  errors.New(("message not found"))
+			return nil, errors.New(("message not found"))
 		}
 		return nil, err
 	}
