@@ -46,7 +46,7 @@ func NewMessangerMongoRepository() *MessangerMongoRepository {
 		log.Fatal(err)
 	}
 
-	collection := client.Database("hex-messanger").Collection("messangers")
+	collection := client.Database("hex-messanger").Collection("messages")
 
 	return &MessangerMongoRepository{
 		client: client,
@@ -94,35 +94,47 @@ func (m *MessangerMongoRepository) GetAllMessages() ([]*domain.Message, error) {
 func (m *MessangerMongoRepository) UpdateMessage(id, body, user_id string) (*domain.Message, error) {
 	var message domain.Message
 
-	err := m.collection.FindOne(context.Background(), bson.M{"id": id}).Decode(&message)
+	filter := bson.M{"id": id, "userid": user_id}
+
+	err := m.collection.FindOne(context.Background(), filter).Decode(&message)
 	if err != nil {
-		return nil,  errors.New(fmt.Sprintf("message not found: %v", err.Error()))
+		if err == mongo.ErrNoDocuments {
+			return nil,  errors.New(("message not found"))
+		}
+		return nil, err
 	}
 
 	message.Body = body
 
-	update := bson.M{"body": message.Body}
-	result, err := m.collection.UpdateOne(context.Background(), bson.M{"id": id, "user_id": user_id}, bson.M{"$set": update})
+	update := bson.M{"$set":bson.M{"body": message.Body}}
+	result, err := m.collection.UpdateOne(context.Background(), filter, update)
 
 	if err != nil {
 		return nil, errors.New("unable to update message :(")
 	}
 
-	var updatedMessage domain.Message
-	if result.MatchedCount == 1 {
-		err := m.collection.FindOne(context.Background(), bson.M{"id": id}).Decode(&updatedMessage)
-		if err != nil {
-			return nil, errors.New("unable to found updated message :(")
-		}
+	if result.MatchedCount == 0 {
+		return nil, errors.New("unable to found updated message :(")
 	}
 
-	return &updatedMessage, nil
+	return &message, nil
 
 }
 
 func (m *MessangerMongoRepository) DeleteMessage(id, user_id string) error {
+	var message domain.Message
 
-	result, err := m.collection.DeleteOne(context.Background(), bson.M{"id": id, "user_id": user_id})
+	filter := bson.M{"id": id, "userid": user_id}
+
+	err := m.collection.FindOne(context.Background(), filter).Decode(&message)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return errors.New(("message not found"))
+		}
+		return err
+	}
+
+	result, err := m.collection.DeleteOne(context.Background(), filter)
 
 	if err != nil {
 		return errors.New("unable to delete message :(")
