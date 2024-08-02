@@ -42,7 +42,10 @@ To clone the repository using an SSH key, including a certificate issued by your
 ##
      go mod init github.com/username/messenger
 
-*  Run go mod tidy to install all dependencies
+*  Run follow command, install all dependencies
+##
+     go mod tidy 
+
 
 ### Usage
 
