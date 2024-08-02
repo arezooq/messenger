@@ -49,11 +49,15 @@ To clone the repository using an SSH key, including a certificate issued by your
 
 ### Usage
 
-* Create database in pgAdmin 4, database
+* Create database in pgAdmin4, database
 
-* Run go run cmd/main.go to start the application with postgres database or Run go run cmd/main.go --db=mongo with mongo database
+* Run follow command, start the application with postgres database or Run go run cmd/main.go --db=mongo with mongo database
+##
+     go run cmd/main.go
 
-* Connect on port localhost:5000/
+* Connect on port
+##
+     localhost:5000/
 
 ### API Endpoints User
 
