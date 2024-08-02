@@ -7,15 +7,15 @@ import (
 	"os"
 	"time"
 
-	"github.com/arezooq/hex-messanger/internal/core/domain"
-	"github.com/arezooq/hex-messanger/internal/core/services"
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
+	"messenger/internal/core/domain"
+	"messenger/internal/core/services"
 )
 
 type HTTPHandlerMessanger struct {
-	svcMessanger	services.MessangerService
+	svcMessanger services.MessangerService
 }
 
 func NewHTTPHandlerMessanger(MessangerService services.MessangerService) *HTTPHandlerMessanger {
@@ -33,7 +33,7 @@ func (h *HTTPHandlerMessanger) CreateMessage(ctx *gin.Context) {
 		return
 	}
 	err := godotenv.Load(".env")
-	
+
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"Error": err,
@@ -90,11 +90,11 @@ func (h *HTTPHandlerMessanger) GetAllMessages(ctx *gin.Context) {
 }
 
 func (h *HTTPHandlerMessanger) UpdateMessage(ctx *gin.Context) {
-	
+
 	var message domain.Message
 
 	id := ctx.Param("id")
-	
+
 	if err := ctx.ShouldBindJSON(&message); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"Error": err.Error(),
@@ -103,7 +103,7 @@ func (h *HTTPHandlerMessanger) UpdateMessage(ctx *gin.Context) {
 	}
 
 	err := godotenv.Load(".env")
-	
+
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"Error": err.Error(),
@@ -131,10 +131,10 @@ func (h *HTTPHandlerMessanger) UpdateMessage(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{
-		"message":			"Message successful updated",
-		"id":            	messageUpdate.ID,
-		"body":         	messageUpdate.Body,
-		"user_id":			messageUpdate.UserID,
+		"message": "Message successful updated",
+		"id":      messageUpdate.Id,
+		"body":    messageUpdate.Body,
+		"user_id": messageUpdate.UserId,
 	})
 }
 
@@ -142,7 +142,7 @@ func (h *HTTPHandlerMessanger) DeleteMessage(ctx *gin.Context) {
 	id := ctx.Param("id")
 
 	err := godotenv.Load(".env")
-	
+
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"Error": err.Error(),

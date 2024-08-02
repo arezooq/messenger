@@ -7,27 +7,27 @@ import (
 	"os"
 	"time"
 
-	"github.com/arezooq/hex-messanger/internal/core/domain"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/jinzhu/gorm"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
 	"golang.org/x/crypto/bcrypt"
+	"messenger/internal/core/domain"
 )
 
 type LoginResponse struct {
-	ID           string `json:"id"`
-	Email        string `json:"email"`
-	AccessToken  string `json:"access_token"`
+	ID          string `json:"id"`
+	Email       string `json:"email"`
+	AccessToken string `json:"access_token"`
 }
 
 type UserPostgresRepository struct {
-	db	*gorm.DB
+	db *gorm.DB
 }
 
 func NewUserPostgresRepository() *UserPostgresRepository {
 	err := godotenv.Load(".env")
-	
+
 	if err != nil {
 		log.Fatal("Error loading file .env")
 	}
@@ -51,7 +51,7 @@ func (u *UserPostgresRepository) RegisterUser(user domain.User) error {
 	if errUserExist != nil {
 		return errors.New("user already exists")
 	}
-	
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
 	if err != nil {
 		return errors.New("password not hashed")
@@ -87,7 +87,7 @@ func (u *UserPostgresRepository) GetAllUsers() ([]*domain.User, error) {
 
 func (u *UserPostgresRepository) LoginUser(email, password string) (*LoginResponse, error) {
 	user := &domain.User{}
-	
+
 	req := u.db.First(&user, "email = ? ", email)
 	if req.RowsAffected == 0 {
 		return nil, errors.New("user not found")
@@ -99,24 +99,23 @@ func (u *UserPostgresRepository) LoginUser(email, password string) (*LoginRespon
 	}
 
 	err = godotenv.Load(".env")
-	
+
 	if err != nil {
 		return nil, errors.New("Error loading file .env")
 	}
 
 	JWTSecret := os.Getenv("SECRET_JWT")
-	
 
-	accessToken, err := u.GenerateAccessToken(user.ID, JWTSecret)
+	accessToken, err := u.GenerateAccessToken(user.Id, JWTSecret)
 
 	if err != nil {
 		return nil, err
 	}
 
 	return &LoginResponse{
-		ID:           user.ID,
-		Email:        user.Email,
-		AccessToken:  accessToken,
+		ID:          user.Id,
+		Email:       user.Email,
+		AccessToken: accessToken,
 	}, nil
 }
 
@@ -154,7 +153,6 @@ func (u *UserPostgresRepository) DeleteUser(id string) error {
 	return nil
 }
 
-
 func (u *UserPostgresRepository) VerifyPassword(hashedPassword, password string) error {
 
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
@@ -175,7 +173,7 @@ func (u *UserPostgresRepository) GenerateAccessToken(userID, jwtSecret string) (
 	return token.SignedString([]byte(jwtSecret))
 }
 
-func (u *UserPostgresRepository) UserExist(email string) error{
+func (u *UserPostgresRepository) UserExist(email string) error {
 	user := &domain.User{}
 	req := u.db.First(&user, "email = ? ", email)
 	if req.RowsAffected != 0 {

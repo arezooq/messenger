@@ -4,59 +4,66 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 	"log"
 	"os"
+	"strconv"
 	"time"
 
-	"github.com/arezooq/hex-messanger/internal/core/domain"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
+	"messenger/internal/core/domain"
 )
 
 type UserMongoRepository struct {
-	client *mongo.Client
-	db string
+	client     *mongo.Client
+	db         string
 	collection *mongo.Collection
 }
 
 func NewUserMongoRepository() *UserMongoRepository {
 
-	err := godotenv.Load(".env")
-	
+	//err := godotenv.Load(".env")
+	//
+	//if err != nil {
+	//	log.Fatal("Error loading file .env")
+	//}
+
+	MongoUrl := "mongodb://0.0.0.0:27017"
+
+	MongodbTimeout := "20"
+
+	timeout, err := strconv.Atoi(MongodbTimeout)
 	if err != nil {
-		log.Fatal("Error loading file .env")
+		log.Fatal(err)
 	}
 
-	Mongodb := os.Getenv("MONGO_USER_URL")
-
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
 	defer cancel()
 
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI(Mongodb))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(MongoUrl))
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = client.Ping(ctx, nil)
-	
+	err = client.Ping(ctx, readpref.Primary())
+
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	collection := client.Database("hex-user").Collection("users")
+	collection := client.Database("management_messenger").Collection("users")
 
 	return &UserMongoRepository{
-		client: client,
-		db: Mongodb,
+		client:     client,
+		db:         MongoUrl,
 		collection: collection,
 	}
-
 }
 
 func (u *UserMongoRepository) RegisterUser(user domain.User) error {
@@ -83,7 +90,7 @@ func (u *UserMongoRepository) GetOneUser(id string) (*domain.User, error) {
 	user := &domain.User{}
 	err := u.collection.FindOne(context.Background(), bson.M{"id": id}).Decode(&user)
 	if err != nil {
-		return nil,  errors.New(fmt.Sprintf("user not found: %v", err.Error()))
+		return nil, errors.New(fmt.Sprintf("user not found: %v", err.Error()))
 	}
 	return user, nil
 }
@@ -92,14 +99,14 @@ func (u *UserMongoRepository) GetAllUsers() ([]*domain.User, error) {
 	var users []*domain.User
 	req, err := u.collection.Find(context.Background(), bson.M{})
 	if err != nil {
-		return nil,  errors.New(fmt.Sprintf("users not found: %v", err.Error()))
+		return nil, errors.New(fmt.Sprintf("users not found: %v", err.Error()))
 	}
 
 	defer req.Close(context.Background())
 	for req.Next(context.Background()) {
 		var user *domain.User
 		if err := req.Decode(&user); err != nil {
-			return nil,  errors.New(fmt.Sprintf("users not found: %v", err.Error()))
+			return nil, errors.New(fmt.Sprintf("users not found: %v", err.Error()))
 		}
 		users = append(users, user)
 	}
@@ -108,10 +115,10 @@ func (u *UserMongoRepository) GetAllUsers() ([]*domain.User, error) {
 
 func (u *UserMongoRepository) LoginUser(email, password string) (*LoginResponse, error) {
 	user := &domain.User{}
-	
+
 	err := u.collection.FindOne(context.Background(), bson.M{"email": email}).Decode(&user)
 	if err != nil {
-		return nil,  errors.New(fmt.Sprintf("user not found: %v", err.Error()))
+		return nil, errors.New(fmt.Sprintf("user not found: %v", err.Error()))
 	}
 
 	err = u.VerifyMongoPassword(user.Password, password)
@@ -120,24 +127,23 @@ func (u *UserMongoRepository) LoginUser(email, password string) (*LoginResponse,
 	}
 
 	err = godotenv.Load(".env")
-	
+
 	if err != nil {
 		return nil, errors.New("Error loading file .env")
 	}
 
 	JWTSecret := os.Getenv("SECRET_JWT")
-	
 
-	accessToken, err := u.GenerateMongoAccessToken(user.ID, JWTSecret)
+	accessToken, err := u.GenerateMongoAccessToken(user.Id, JWTSecret)
 
 	if err != nil {
 		return nil, err
 	}
 
 	return &LoginResponse{
-		ID:           user.ID,
-		Email:        user.Email,
-		AccessToken:  accessToken,
+		ID:          user.Id,
+		Email:       user.Email,
+		AccessToken: accessToken,
 	}, nil
 }
 
@@ -146,7 +152,7 @@ func (u *UserMongoRepository) UpdateUser(id, email, password string) (*domain.Us
 
 	err := u.collection.FindOne(context.Background(), bson.M{"id": id}).Decode(&user)
 	if err != nil {
-		return nil,  errors.New(fmt.Sprintf("user not found: %v", err.Error()))
+		return nil, errors.New(fmt.Sprintf("user not found: %v", err.Error()))
 	}
 
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
@@ -190,7 +196,6 @@ func (u *UserMongoRepository) DeleteUser(id string) error {
 	return nil
 }
 
-
 func (u *UserMongoRepository) VerifyMongoPassword(hashedPassword, password string) error {
 
 	err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password))
@@ -211,8 +216,8 @@ func (u *UserMongoRepository) GenerateMongoAccessToken(userID, jwtSecret string)
 	return token.SignedString([]byte(jwtSecret))
 }
 
-func (u *UserMongoRepository) UserMongoExist(email string) error{
-	
+func (u *UserMongoRepository) UserMongoExist(email string) error {
+
 	countEmail, errEmail := u.collection.CountDocuments(context.Background(), bson.M{"email": email})
 	if errEmail != nil {
 		return errors.New("error occured while checking for the email")

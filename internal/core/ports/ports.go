@@ -1,8 +1,8 @@
 package ports
 
 import (
-	"github.com/arezooq/hex-messanger/internal/adapters/repositories"
-	"github.com/arezooq/hex-messanger/internal/core/domain"
+	"messenger/internal/adapters/repositories"
+	"messenger/internal/core/domain"
 )
 
 type MessangerService interface {

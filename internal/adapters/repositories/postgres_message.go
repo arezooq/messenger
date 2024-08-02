@@ -6,19 +6,19 @@ import (
 	"log"
 	"os"
 
-	"github.com/arezooq/hex-messanger/internal/core/domain"
 	"github.com/jinzhu/gorm"
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
+	"messenger/internal/core/domain"
 )
 
 type MessangerPostgresRepository struct {
-	db	*gorm.DB
+	db *gorm.DB
 }
 
 func NewMessangerPostgresRepository() *MessangerPostgresRepository {
 	err := godotenv.Load(".env")
-	
+
 	if err != nil {
 		log.Fatal("Error loading file .env")
 	}

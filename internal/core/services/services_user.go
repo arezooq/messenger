@@ -1,14 +1,14 @@
 package services
 
 import (
-	"github.com/arezooq/hex-messanger/internal/adapters/repositories"
-	"github.com/arezooq/hex-messanger/internal/core/domain"
-	"github.com/arezooq/hex-messanger/internal/core/ports"
 	"github.com/google/uuid"
+	"messenger/internal/adapters/repositories"
+	"messenger/internal/core/domain"
+	"messenger/internal/core/ports"
 )
 
 type UserService struct {
-	repo	ports.UserRepository
+	repo ports.UserRepository
 }
 
 func NewUserService(repo ports.UserRepository) *UserService {
@@ -18,7 +18,7 @@ func NewUserService(repo ports.UserRepository) *UserService {
 }
 
 func (u *UserService) RegisterUser(user domain.User) error {
-	user.ID = uuid.New().String()
+	user.Id = uuid.New().String()
 	return u.repo.RegisterUser(user)
 }
 
@@ -36,7 +36,6 @@ func (u *UserService) UpdateUser(id, email, password string) (*domain.User, erro
 func (u *UserService) DeleteUser(id string) error {
 	return u.repo.DeleteUser(id)
 }
-
 
 func (u *UserService) LoginUser(email, password string) (*repositories.LoginResponse, error) {
 	return u.repo.LoginUser(email, password)

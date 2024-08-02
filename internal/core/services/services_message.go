@@ -1,13 +1,13 @@
 package services
 
 import (
-	"github.com/arezooq/hex-messanger/internal/core/domain"
-	"github.com/arezooq/hex-messanger/internal/core/ports"
 	"github.com/google/uuid"
+	"messenger/internal/core/domain"
+	"messenger/internal/core/ports"
 )
 
 type MessangerService struct {
-	repo	ports.MessangerRepository
+	repo ports.MessangerRepository
 }
 
 func NewMessangerService(repo ports.MessangerRepository) *MessangerService {
@@ -17,8 +17,8 @@ func NewMessangerService(repo ports.MessangerRepository) *MessangerService {
 }
 
 func (m *MessangerService) CreateMessage(userId string, message domain.Message) error {
-	message.ID = uuid.New().String()
-	message.UserID = userId
+	message.Id = uuid.New().String()
+	message.UserId = userId
 	return m.repo.CreateMessage(message)
 }
 
