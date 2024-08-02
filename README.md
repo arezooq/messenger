@@ -14,6 +14,8 @@ It represents business logic. It does not care about your framework development,
 
 * Copy the URL for the repository.
 
+    <img src="https://res.cloudinary.com/dvli0xy5y/image/upload/v1722611426/link_ssh_repository_jzpjrc.png" width="500" alt="link" />
+
 To clone the repository using an SSH key, including a certificate issued by your organization's SSH certificate authority, click SSH, then click .
 
   1. Open Terminal.
