@@ -8,7 +8,7 @@ It represents business logic. It does not care about your framework development,
 
 ### Cloning a repository 
 
-* On GitHub.com, navigate to the main page of the repository. [https://github.com/arezooq/messenger]
+* On GitHub.com, navigate to the main page of the [repository](https://github.com/arezooq/messenger)
 
 * Above the list of files, click <>Code.
 
