@@ -23,11 +23,12 @@ To clone the repository using an SSH key, including a certificate issued by your
   2. Change the current working directory to the location where you want the cloned directory.
 
   3. Type git clone, and then paste the URL you copied earlier.
+  ##
 
     git clone git@github.com:arezooq/messenger.git
 
   4. Press Enter to create your local clone.
-
+  ##
     git clone git@github.com:arezooq/messenger.git
 
      Cloning into 'messenger'...
