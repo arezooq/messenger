@@ -117,7 +117,7 @@ func (h *HTTPHandlerUser) GetAllUsersByExportData(ctx *gin.Context) {
 
 	file.SetActiveSheet(sheetIndex)
 	ctx.Header("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")
-	ctx.Header("Content-Disposition", "attachment; filename=data.xlsx")
+	ctx.Header("Content-Disposition", "attachment; filename=dataUserExport.xlsx")
 	if err := file.Write(ctx.Writer); err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Error": err.Error(),
