@@ -69,7 +69,7 @@ func (h *HTTPHandlerUser) GetAllUsers(ctx *gin.Context) {
 func (h *HTTPHandlerUser) GetAllUsersByExportData(ctx *gin.Context) {
 	users, err := h.svc.GetAllUsers()
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{
+		ctx.JSON(http.StatusInternalServerError, gin.H{
 			"Error": err.Error(),
 		})
 		return
